@@ -14,7 +14,7 @@ global.fetch = require('node-fetch');
 router.use(bodyParser.urlencoded({extended: true}));
 router.use(bodyParser.json());
 
-
+var count = 0;
     /* ------------------------------ Credential ------------------------------ */
 
     const poolData = {    
@@ -113,8 +113,7 @@ router.use(bodyParser.json());
              url: `https://cognito-idp.${pool_region}.amazonaws.com/${poolData.UserPoolId}/.well-known/jwks.json`,
              json: true
      },  function (error, response, body) {
-         return
-        if (!error && response.statusCode === 200) {
+          if (!error && response.statusCode === 200) {
             console.log("validate token");
             pems = {};
             var keys = body['keys'];
@@ -133,25 +132,21 @@ router.use(bodyParser.json());
             var decodedJwt = jwt.decode(token, {complete: true});
             if (!decodedJwt) {
                 console.log("Not a valid JWT token");
-                return false;
             }
 
             var kid = decodedJwt.header.kid;
             var pem = pems[kid];
             if (!pem) {
                 console.log('Invalid token');
-                return false ;
             }
 
             jwt.verify(token, pem, function(err, payload) {
                 if(err) {
                     console.log("Invalid Token.");
-                    return false;
-
                 } else {
                     console.log("Valid Token.");
                     console.log(payload);
-                    return true;
+                    return payload;
                 }
             });
         } else {
@@ -159,6 +154,8 @@ router.use(bodyParser.json());
          }
       });
      }
+
+
 
 // ---------------------------------------------------------------------------  //
                  /* R O U T E S - S E T U P */
@@ -245,12 +242,12 @@ router.use(bodyParser.json());
         let  insertToken = JSON.stringify(req.query.token);
 
         console.log("Insert token :" +  insertToken);
-
         var accesToken_= ValidateToken(req.query.token);
 
         if (insertToken === undefined) return res.status(401).send({ auth: false, message: 'No token provided.' });
         
         if (accesToken_ === "undefined") return res.status(401).send({ auth: false, message: 'Invalid token' });
+
 
         User.find(function (error, users) {
             if (error)
@@ -259,6 +256,7 @@ router.use(bodyParser.json());
         });
     });
      
+  
    /* ----------------------------------------------------------------------------------------
         READ ONE USER(by id) - (GET) - http://localhost:3000/api/users/user_id
     ----------------------------------------------------------------------------------------*/
@@ -266,7 +264,7 @@ router.use(bodyParser.json());
        
         let  insertToken = JSON.stringify(req.query.token);
 
-        console.log("Insert token :" +  insertToken);
+        //console.log("Insert token :" +  insertToken);
 
         var accesToken_= ValidateToken(req.query.token);
 
@@ -274,12 +272,16 @@ router.use(bodyParser.json());
         
         if (accesToken_ === "undefined") return res.status(401).send({ auth: false, message: 'Invalid token' });
 
+        /* User.count({ "supervisorId": req },function ( users) {
+            count = res.json(users);
+        });
+        */
+        
         // console.log("Acces token " + JSON.stringify(accesToken_));
-       
         User.findById(req.params.user_id, function (error, user) {
             if (error)
                 res.status(500).send('error: ' + error);
-            res.json(user);
+                res.json(user);
         })
     })
     
