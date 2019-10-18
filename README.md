@@ -91,6 +91,6 @@ api/users/5da8cb1275bac422a2e82b45?oken=eyJraWQiOiI4TjQ1czErSW5Rd3kxb2pMVHJxV0xL
 
 
 
+EXAMPLE GENERATED TOKEN :
 
-
-https://user-images.githubusercontent.com/50145471/67102235-7f53cf00-f199-11e9-8272-73fd85c05a41.png
+<img width="1086" alt="Captura de Pantalla 2019-10-18 a la(s) 11 05 43" src="https://user-images.githubusercontent.com/50145471/67102235-7f53cf00-f199-11e9-8272-73fd85c05a41.png">
